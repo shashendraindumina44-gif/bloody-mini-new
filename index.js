@@ -5,7 +5,6 @@ const bodyParser = require("body-parser");
 const pino = require('pino');
 const fs = require('fs');
 
-// 💉 Correct way to import based on your package.json
 const { 
     default: makeWASocket, 
     useMultiFileAuthState, 
@@ -14,8 +13,7 @@ const {
     makeCacheableSignalKeyStore,
     Browsers,
     getContentType
-} = require('baileys'); // 👈 මෙතන '@whiskeysockets/baileys' වෙනුවට 'baileys' විතරක් තියෙන්න ඕනේ
-
+} = require('baileys');
 // --- ⚙️ GLOBAL SETTINGS ---
 global.autorecording = true; 
 global.autotyping = false;    
@@ -81,5 +79,6 @@ app.listen(PORT, () => {
     startBloodyRose(); // බොට් එක ආරම්භ කිරීම
 
 });
+
 
 
