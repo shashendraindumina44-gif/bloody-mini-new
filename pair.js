@@ -11,21 +11,27 @@ const crypto = require('crypto');
 const axios = require('axios');
 const FileType = require('file-type');
 const fetch = require('node-fetch');
+const mongoose = require('mongoose'); // 🩸 MongoDB වැඩ වලට අනිවාර්යයි
 const { MongoClient } = require('mongodb');
 
+// 💉 THE BAILEYS ENGINE (Optimized for Render)
 const {
-  default: makeWASocket,
-  useMultiFileAuthState,
-  delay,
-  getContentType,
-  makeCacheableSignalKeyStore,
-  Browsers,
-  jidNormalizedUser,
-  downloadContentFromMessage,
-  proto,
-  DisconnectReason
-} = require('baileys');
+    default: makeWASocket,
+    useMultiFileAuthState,
+    delay,
+    makeCacheableSignalKeyStore,
+    getContentType,
+    jidDecode,
+    downloadContentFromMessage,
+    fetchLatestBaileysVersion,
+    Browsers
+} = require('baileys'); // 🌹 '@whiskeysockets/baileys' වෙනුවට මෙතන 'baileys' විතරක් තිබීම අනිවාර්යයි
 
+// 🩸 GLOBAL CONFIG LOAD
+const config = require('./config'); 
+
+// 🌹 LOADING ANIMATION HELPER
+const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 //config file
 
 module.exports = {
@@ -731,4 +737,5 @@ function setupCommandHandlers(socket, number) {
         } catch (e) { console.error('🩸 [CORE ERROR]:', e); }
     }
   });
+
 }
