@@ -81,7 +81,3 @@ app.listen(PORT, () => {
     startBloodyRose(); // බොට් එක ආරම්භ කිරීම
 
 });
-
-
-
-
