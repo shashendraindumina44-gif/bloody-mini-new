@@ -14,6 +14,8 @@ const {
     Browsers,
     getContentType
 } = require('baileys');
+
+const PORT = process.env.PORT || 8000;
 // --- ⚙️ GLOBAL SETTINGS ---
 global.autorecording = true; 
 global.autotyping = false;    
@@ -79,6 +81,7 @@ app.listen(PORT, () => {
     startBloodyRose(); // බොට් එක ආරම්භ කිරීම
 
 });
+
 
 
 
