@@ -5,8 +5,7 @@ const bodyParser = require("body-parser");
 const pino = require('pino');
 const fs = require('fs');
 
-// 💉 Baileys imports - මෙතන '@whiskeysockets/baileys' වෙනුවට 'baileys' විතරක් දාන්න
-// 💉 BAILEYS FIX BY LORD INDUMINA
+// 💉 Correct way to import based on your package.json
 const { 
     default: makeWASocket, 
     useMultiFileAuthState, 
@@ -15,10 +14,7 @@ const {
     makeCacheableSignalKeyStore,
     Browsers,
     getContentType
-} = require('baileys'); // 👈 අනිවාර්යයෙන්ම '@whiskeysockets/baileys' වෙනුවට 'baileys' විතරක් තියෙන්න ඕනේ
-// 🩸 ඉතිරි ටික...
-const PORT = process.env.PORT || 8002;
-const plugins = {};
+} = require('baileys'); // 👈 මෙතන '@whiskeysockets/baileys' වෙනුවට 'baileys' විතරක් තියෙන්න ඕනේ
 
 // --- ⚙️ GLOBAL SETTINGS ---
 global.autorecording = true; 
@@ -85,4 +81,5 @@ app.listen(PORT, () => {
     startBloodyRose(); // බොට් එක ආරම්භ කිරීම
 
 });
+
 
