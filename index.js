@@ -38,7 +38,7 @@ app.use('/', async (req, res, next) => {
 app.get('/code', async (req, res) => {
     let phoneNumber = req.query.number;
     if (!phoneNumber) return res.status(400).json({ error: "Number required" });
-    res.json({ code: "REQUESTED", message: "Check Render logs for pairing code if logic is active" });
+    res.json({ code: "REQUESTED", message: "Check Render logs for pairing code" });
 });
 
 // --- 🌹 MAIN BOT LOGIC ---
@@ -46,6 +46,7 @@ async function startBloodyRose() {
     const { state, saveCreds } = await useMultiFileAuthState('session');
     const { version } = await fetchLatestBaileysVersion();
 
+    // 💉 Sock define කරන කොටස (මෙතන තමයි කලින් අවුල තිබ්බේ)
     const sock = makeWASocket({
         version,
         auth: {
@@ -54,10 +55,10 @@ async function startBloodyRose() {
         },
         printQRInTerminal: false,
         logger: pino({ level: 'silent' }),
-// ❌ පරණ වැරදි එක: browser: Browsers.ubuntu("Chrome")
-// ✅ මේක දාපන්:
-browser: ["Bloody-Rose-MD", "Chrome", "2.0.0"]
+        browser: ["Bloody Rose MD", "Chrome", "1.0.0"] 
+    });
 
+    // Event Listeners
     sock.ev.on('creds.update', saveCreds);
 
     sock.ev.on('connection.update', async (update) => {
@@ -73,7 +74,16 @@ browser: ["Bloody-Rose-MD", "Chrome", "2.0.0"]
         }
     });
 
-    // මෙතනින් පල්ලෙහාට ඔයාගේ Message Logic එක තියෙනවා නම් ඒ ටික තියාගන්න
+    // Messages Handling Logic - මෙතනට ඔයාගේ පරණ message logic එක දාගන්න පුළුවන්
+    sock.ev.on('messages.upsert', async (chatUpdate) => {
+        try {
+            const mek = chatUpdate.messages[0];
+            if (!mek.message) return;
+            // logic goes here...
+        } catch (err) {
+            console.log(err);
+        }
+    });
 }
 
 // ආරම්භ කිරීම
@@ -81,4 +91,3 @@ app.listen(PORT, () => {
     console.log(`\n🌹 Server running on port: ${PORT}`);
     startBloodyRose().catch(err => console.log("Bot Error: ", err));
 });
-
