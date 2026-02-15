@@ -3,7 +3,7 @@ const app = express();
 const path = require('path');
 const bodyParser = require("body-parser");
 const pino = require('pino');
-const fs = require('fs');
+const fs = require('fs-extra');
 
 const { 
     default: makeWASocket, 
@@ -15,7 +15,9 @@ const {
     getContentType
 } = require('baileys');
 
-const PORT = process.env.PORT || 8000;
+// 💉 PORT Definition
+const PORT = process.env.PORT || 10000;
+
 // --- ⚙️ GLOBAL SETTINGS ---
 global.autorecording = true; 
 global.autotyping = false;    
@@ -25,7 +27,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 // --- 🔑 PAIRING SERVER ROUTES ---
-// මෙය ඔයාගේ main.html එක පෙන්වීමට භාවිතා කරයි
 app.use('/', async (req, res, next) => {
     if (req.path === '/') {
         return res.sendFile(path.join(process.cwd(), '/main.html'));
@@ -33,14 +34,11 @@ app.use('/', async (req, res, next) => {
     next();
 });
 
-// Pairing Code එක ලබාගැනීමේ API එක
+// Pairing Code API
 app.get('/code', async (req, res) => {
     let phoneNumber = req.query.number;
     if (!phoneNumber) return res.status(400).json({ error: "Number required" });
-    
-    // මෙහිදී Bot එක හරහා code එක ලබාගැනීමේ logic එක ක්‍රියාත්මක කළ හැක
-    // දැනට පවතින සරල ක්‍රමය:
-    res.json({ code: "REQUESTED", message: "Check server console for code" });
+    res.json({ code: "REQUESTED", message: "Check Render logs for pairing code if logic is active" });
 });
 
 // --- 🌹 MAIN BOT LOGIC ---
@@ -54,13 +52,11 @@ async function startBloodyRose() {
             creds: state.creds,
             keys: makeCacheableSignalKeyStore(state.keys, pino({ level: 'silent' })),
         },
-        printQRInTerminal: false, // වෙබ් එකෙන් කරන නිසා Terminal QR එක අක්‍රිය කළ හැක
+        printQRInTerminal: false,
         logger: pino({ level: 'silent' }),
-        browser: Browsers.ubuntu("Chrome")
+        // 🌹 Fixed Browser Line - මෙතන තමයි කලින් අවුල තිබ්බේ
+        browser: ["Bloody Rose", "Chrome", "1.0.0"] 
     });
-
-    // මෙතනින් පස්සේ ඔයාගේ පරණ message logic සහ group logic සියල්ල එලෙසම තබන්න...
-    // (ඉඩකඩ පටු නිසා සම්පූර්ණ message logic එක මෙහි ඇතුළත් නොකරමි)
 
     sock.ev.on('creds.update', saveCreds);
 
@@ -68,16 +64,20 @@ async function startBloodyRose() {
         const { connection, lastDisconnect } = update;
         if (connection === 'close') {
             const shouldReconnect = (lastDisconnect.error)?.output?.statusCode !== DisconnectReason.loggedOut;
-            if (shouldReconnect) startBloodyRose();
+            if (shouldReconnect) {
+                console.log('💉 Connection lost. Reconnecting...');
+                startBloodyRose();
+            }
         } else if (connection === 'open') {
             console.log('\n--- 🌹 BLOODY ROSE MD IS ONLINE! ---');
         }
     });
+
+    // 🩸 මෙතනට ඔයාගේ පරණ message handling logic එක දාගන්න
 }
 
-// සර්වර් එක සහ බොට් එක දෙකම ආරම්භ කිරීම
+// ආරම්භ කිරීම
 app.listen(PORT, () => {
-    console.log(`\n🌹 Server running on http://localhost:${PORT}`);
-    startBloodyRose(); // බොට් එක ආරම්භ කිරීම
-
+    console.log(`\n🌹 Server running on port: ${PORT}`);
+    startBloodyRose().catch(err => console.log("Bot Error: ", err));
 });
