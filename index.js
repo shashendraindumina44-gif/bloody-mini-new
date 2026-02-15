@@ -54,9 +54,9 @@ async function startBloodyRose() {
         },
         printQRInTerminal: false,
         logger: pino({ level: 'silent' }),
-        // 💉 FIXED BROWSER LINE: Browsers.ubuntu වෙනුවට මේ Array එක පාවිච්චි කරන්න
-        browser: ["Bloody Rose MD", "Chrome", "1.0.0"] 
-    });
+// ❌ පරණ වැරදි එක: browser: Browsers.ubuntu("Chrome")
+// ✅ මේක දාපන්:
+browser: ["Bloody-Rose-MD", "Chrome", "2.0.0"]
 
     sock.ev.on('creds.update', saveCreds);
 
@@ -81,3 +81,4 @@ app.listen(PORT, () => {
     console.log(`\n🌹 Server running on port: ${PORT}`);
     startBloodyRose().catch(err => console.log("Bot Error: ", err));
 });
+
