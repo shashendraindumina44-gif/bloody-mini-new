@@ -54,8 +54,8 @@ async function startBloodyRose() {
         },
         printQRInTerminal: false,
         logger: pino({ level: 'silent' }),
-        // 🌹 Fixed Browser Line - මෙතන තමයි කලින් අවුල තිබ්බේ
-        browser: ["Bloody Rose", "Chrome", "1.0.0"] 
+        // 💉 FIXED BROWSER LINE: Browsers.ubuntu වෙනුවට මේ Array එක පාවිච්චි කරන්න
+        browser: ["Bloody Rose MD", "Chrome", "1.0.0"] 
     });
 
     sock.ev.on('creds.update', saveCreds);
@@ -73,7 +73,7 @@ async function startBloodyRose() {
         }
     });
 
-    // 🩸 මෙතනට ඔයාගේ පරණ message handling logic එක දාගන්න
+    // මෙතනින් පල්ලෙහාට ඔයාගේ Message Logic එක තියෙනවා නම් ඒ ටික තියාගන්න
 }
 
 // ආරම්භ කිරීම
