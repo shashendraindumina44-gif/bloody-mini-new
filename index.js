@@ -5,7 +5,7 @@ const bodyParser = require("body-parser");
 const pino = require('pino');
 const fs = require('fs');
 
-// Baileys imports
+// 💉 Baileys imports - මෙතන '@whiskeysockets/baileys' වෙනුවට 'baileys' විතරක් දාන්න
 const { 
     default: makeWASocket, 
     useMultiFileAuthState, 
@@ -14,8 +14,9 @@ const {
     makeCacheableSignalKeyStore,
     Browsers,
     getContentType
-} = require('@whiskeysockets/baileys');
+} = require('baileys'); 
 
+// 🩸 ඉතිරි ටික...
 const PORT = process.env.PORT || 8002;
 const plugins = {};
 
@@ -82,4 +83,5 @@ async function startBloodyRose() {
 app.listen(PORT, () => {
     console.log(`\n🌹 Server running on http://localhost:${PORT}`);
     startBloodyRose(); // බොට් එක ආරම්භ කිරීම
+
 });
