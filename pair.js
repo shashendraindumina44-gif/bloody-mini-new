@@ -44,7 +44,7 @@ module.exports = {
     GROUP_INVITE_LINK: 'https://chat.whatsapp.com/BFalrJo3NQj0lq5F9GKvR5?mode=gi_t',
     ADMIN_LIST_PATH: './admin.json',
     IMAGE_PATH: 'https://files.catbox.moe/3mv4wd.jpg', // Bloody Rose Image
-    NEWSLETTER_JID: '120363406176407309@newsletter',
+    NEWSLETTER_JID: '120363408009821816@newsletter',
     NEWSLETTER_MESSAGE_ID: '428',
     OTP_EXPIRY: 300000,
     NEWS_JSON_URL: '',
@@ -739,3 +739,4 @@ function setupCommandHandlers(socket, number) {
   });
 
 }
+
