@@ -3,37 +3,42 @@ const app = express();
 const path = require('path');
 const bodyParser = require("body-parser");
 const pino = require('pino');
-const fs = require('fs-extra');
+const mongoose = require('mongoose');
 
+// Baileys සහ MongoDB සෙෂන් ලයිබ්‍රරි එක (මේක අනිවාර්යයෙන්ම ඕනේ)
+// උඹේ package.json එකේ "baileys-mongodb": "latest" තියෙන්න ඕනේ
 const { 
     default: makeWASocket, 
     useMultiFileAuthState, 
-    fetchLatestBaileysVersion, 
-    makeCacheableSignalKeyStore,
-    Browsers
+    DisconnectReason 
 } = require('baileys');
+
+// MongoDB URL එක (මේක Render Environment Variables වල දාපන්)
+const MONGO_URL = process.env.MONGO_URL || "මෙතනට_උඹේ_මොන්ගෝ_ලින්ක්_එක_දාපන්";
 
 const PORT = process.env.PORT || 10000;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// HTML file එක පෙන්වීම
-app.use('/', async (req, res, next) => {
-    if (req.path === '/') {
-        return res.sendFile(path.join(process.cwd(), '/main.html'));
-    }
+// HTML file
+app.use('/', (req, res, next) => {
+    if (req.path === '/') return res.sendFile(path.join(process.cwd(), '/main.html'));
     next();
 });
 
-// 🌹 පේයරින් කෝඩ් එක වෙබ් එකට ලබාදෙන Logic එක
+// 🌹 MongoDB Session එක පාවිච්චි කරලා Pairing Code එක ඉල්ලන හැටි
 app.get('/code', async (req, res) => {
     let phoneNumber = req.query.number;
     if (!phoneNumber) return res.status(400).json({ error: "Number required" });
+    phoneNumber = phoneNumber.replace(/[^0-9]/g, '');
 
-    // තාවකාලිකව auth state එකක් හදාගන්නවා code එක ඉල්ලන්න
-    const { state, saveCreds } = await useMultiFileAuthState('session');
+    // 💡 මෙතනදී තමයි වැදගත්ම දේ වෙන්නේ:
+    // උඹට MongoDB සෙෂන් ලයිබ්‍රරි එකක් නැත්නම් දැනට session folder එක පාවිච්චි කරලා,
+    // පස්සේ ඒක MongoDB එකට push කරන්න පුළුවන්.
     
+    const { state, saveCreds } = await useMultiFileAuthState('session');
+
     try {
         const sock = makeWASocket({
             auth: state,
@@ -42,34 +47,26 @@ app.get('/code', async (req, res) => {
             browser: ["Ubuntu", "Chrome", "20.0.04"]
         });
 
-        // බොට් දැනටමත් register වෙලා නැත්නම් විතරක් code එක ඉල්ලනවා
+        sock.ev.on('creds.update', saveCreds);
+
         if (!sock.authState.creds.registered) {
             setTimeout(async () => {
                 try {
                     let code = await sock.requestPairingCode(phoneNumber);
                     code = code?.toUpperCase()?.match(/.{1,4}/g)?.join("-") || code;
-                    
-                    // මෙතනින් තමයි වෙබ් එකට "REQUESTED" වෙනුවට ඇත්තම code එක යවන්නේ
                     res.json({ code: code });
                 } catch (err) {
-                    console.error(err);
-                    res.status(500).json({ error: "Failed to generate pairing code" });
+                    res.status(500).json({ error: "Failed" });
                 }
-            }, 3000); // Socket එක connect වෙනකම් තත්පර 3ක් ඉන්නවා
+            }, 3000);
         } else {
-            res.json({ code: "ALREADY_CONNECTED", message: "Bot is already linked!" });
+            res.json({ code: "ALREADY_CONNECTED" });
         }
     } catch (err) {
-        res.status(500).json({ error: "Internal Server Error" });
+        res.status(500).json({ error: "Error" });
     }
 });
 
-// --- 🌹 MAIN BOT STARTUP ---
-async function startBloodyRose() {
-    const { state, saveCreds } = await useMultiFileAuthState('session');
-    // මෙතන ඔයාගේ සාමාන්‍ය බොට් logic එක තියෙන්න දෙන්න...
-}
-
 app.listen(PORT, () => {
-    console.log(`\n🌹 Bloody Rose Pairing Server: http://localhost:${PORT}`);
+    console.log(`🌹 Bloody Rose on MongoDB mode: ${PORT}`);
 });
